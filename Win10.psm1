@@ -4078,6 +4078,67 @@ Function UnpinTaskbarIcons {
 
 
 ##########
+#region Hydra
+##########
+
+# Do not show when snapping a window, what can be attached next to it (current user only)
+# Не показывать при прикреплении окна, что можно прикрепить рядом с ним (только для текущего пользователя)
+Function DisableSnapAssist {
+    Write-Output "Disable Snap Assist..."
+    If (!(Test-Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced")) {
+        New-Item -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Force | Out-Null
+    }
+    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "SnapAssist" -Type DWord -Value 0
+}
+
+# Show when snapping a window, what can be attached next to it (current user only)
+# Показывать при прикреплении окна, что можно прикрепить рядом с ним (только для текущего пользователя)
+Function EnableSnapAssist {
+    Write-Output "Enable Snap Assist..."
+    If (!(Test-Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced")) {
+        New-Item -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Force | Out-Null
+    }
+    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "SnapAssist" -Type DWord -Value 1
+}
+
+# Set the power management scheme on "High performance" if device is a desktop
+# Установить схему управления питанием на "Высокая производительность", если устройство является стационарным ПК
+Function PowerManagementSchemeHigh {
+    Write-Output "Power management scheme on High performance..."
+    If ((Get-CimInstance -ClassName Win32_ComputerSystem).PCSystemType -eq 1)
+    {
+        POWERCFG /SETACTIVE SCHEME_MIN
+    }
+}
+
+# Set the power management scheme on "Balanced" (default value)
+# Установить схему управления питанием на "Сбалансированная" (значение по умолчанию)
+Function DefaultPowerManagementScheme {
+    Write-Output "Power management scheme on Balanced..."
+    POWERCFG /SETACTIVE SCHEME_BALANCED
+}
+
+# Set the default input method to the English language
+# Установить метод ввода по умолчанию на английский язык
+Function DefaultInputMethodEN {
+    Write-Output "Default input method to the English..."
+    Set-WinDefaultInputMethodOverride -InputTip "0409:00000409"
+}
+
+# Reset the default input method
+# Сбросить метод ввода по умолчанию
+Function ResetDefaultInputMethod {
+    Write-Output "Reset the default input method..."
+    Remove-ItemProperty -Path "HKCU:\Control Panel\International\User Profile" -Name "InputMethodOverride" -Force -ErrorAction SilentlyContinue
+}
+
+##########
+#endregion Hydra
+##########
+
+
+
+##########
 #region Auxiliary Functions
 ##########
 
