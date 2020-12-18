@@ -4082,7 +4082,6 @@ Function UnpinTaskbarIcons {
 ##########
 
 # Do not show when snapping a window, what can be attached next to it (current user only)
-# Не показывать при прикреплении окна, что можно прикрепить рядом с ним (только для текущего пользователя)
 Function DisableSnapAssist {
     Write-Output "Disable Snap Assist..."
     If (!(Test-Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced")) {
@@ -4092,7 +4091,6 @@ Function DisableSnapAssist {
 }
 
 # Show when snapping a window, what can be attached next to it (current user only)
-# Показывать при прикреплении окна, что можно прикрепить рядом с ним (только для текущего пользователя)
 Function EnableSnapAssist {
     Write-Output "Enable Snap Assist..."
     If (!(Test-Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced")) {
@@ -4102,7 +4100,6 @@ Function EnableSnapAssist {
 }
 
 # Set the power management scheme on "High performance" if device is a desktop
-# Установить схему управления питанием на "Высокая производительность", если устройство является стационарным ПК
 Function PowerManagementSchemeHigh {
     Write-Output "Power management scheme on High performance..."
     If ((Get-CimInstance -ClassName Win32_ComputerSystem).PCSystemType -eq 1)
@@ -4112,24 +4109,91 @@ Function PowerManagementSchemeHigh {
 }
 
 # Set the power management scheme on "Balanced" (default value)
-# Установить схему управления питанием на "Сбалансированная" (значение по умолчанию)
 Function DefaultPowerManagementScheme {
     Write-Output "Power management scheme on Balanced..."
     POWERCFG /SETACTIVE SCHEME_BALANCED
 }
 
 # Set the default input method to the English language
-# Установить метод ввода по умолчанию на английский язык
 Function DefaultInputMethodEN {
     Write-Output "Default input method to the English..."
     Set-WinDefaultInputMethodOverride -InputTip "0409:00000409"
 }
 
 # Reset the default input method
-# Сбросить метод ввода по умолчанию
 Function ResetDefaultInputMethod {
     Write-Output "Reset the default input method..."
     Remove-ItemProperty -Path "HKCU:\Control Panel\International\User Profile" -Name "InputMethodOverride" -Force -ErrorAction SilentlyContinue
+}
+
+# Stop File Explorer From Showing External Drives Twice
+Function HideDublDrive {
+    Write-Output "Stop File Explorer From Showing External Drives Twice..."
+    Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\DelegateFolders\{F5FB2C77-0E2F-4A16-A381-3E560C68BC83}" -Recurse -ErrorAction SilentlyContinue
+    Remove-Item -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\DelegateFolders\{F5FB2C77-0E2F-4A16-A381-3E560C68BC83}" -Recurse -ErrorAction SilentlyContinue
+}
+
+# Restore File Explorer Showing External Drives
+Function RestoreDublDrive {
+    Write-Output "Restore File Explorer Showing External Drives..."
+    If (!(Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\DelegateFolders\{F5FB2C77-0E2F-4A16-A381-3E560C68BC83}")) {
+        New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\DelegateFolders\{F5FB2C77-0E2F-4A16-A381-3E560C68BC83}" | Out-Null }
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\DelegateFolders\{F5FB2C77-0E2F-4A16-A381-3E560C68BC83}" -Name "@" -Type String -Value "Removable Drives"
+    If (!(Test-Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\DelegateFolders\{F5FB2C77-0E2F-4A16-A381-3E560C68BC83}")) {
+        New-Item -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\DelegateFolders\{F5FB2C77-0E2F-4A16-A381-3E560C68BC83}" | Out-Null }
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\DelegateFolders\{F5FB2C77-0E2F-4A16-A381-3E560C68BC83}" -Name "@" -Type String -Value "Removable Drives"
+}
+
+# Enable proxy Antizapret (https://antizapret.prostovpn.org/)
+Function EnableProxyAntizapret {
+    Write-Output "Ebable Proxy Antizapret..."
+    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings" -Name "AutoConfigURL" -Type String -Value "https://antizapret.prostovpn.org/proxy.pac"
+}
+
+# Disable ClearType (Default:2; Disable:1)
+Function DisableClearType {
+    Write-Output "Disable ClearType..."
+    Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "FontSmoothingType" -Type DWord -Value 1
+}
+
+# Enable ClearType (Default:2; Disable:1)
+Function EnableClearType {
+    Write-Output "Enable ClearType..."
+    Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "FontSmoothingType" -Type DWord -Value 2
+}
+
+# Disable Font Smoothing 
+# Отключить сглаживание шрифтов (По умолчанию: 2; Отключить: 1)
+Function DisableFontSmoothing {
+    Write-Output "Disable Font Smoothing..."
+    Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "FontSmoothing" -Type DWord -Value 1
+}
+
+# Enable Font Smoothing (Default:2; Disable:1)
+Function EnableFontSmoothing {
+    Write-Output "Enable Font Smoothing..."
+    Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "FontSmoothing" -Type DWord -Value 2
+}
+
+# Default background color black
+Function DefaultBackgroundColor {
+    Write-Output "Default background color black..."
+    Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "wallpaper" -Type String -Value ""
+    Set-ItemProperty -Path "HKCU:\Control Panel\Colors" -Name "Background" -Type String -Value "0 0 0"
+}
+
+# Fix jumping icons on the Windows 10 desktop
+Function FixJumpingIcons {
+    Write-Output "Fix jumping icons on the Windows 10 desktop..."
+    Set-ItemProperty -Path "HKCU:\Control Panel\Desktop\WindowMetrics" -Name "IconSpacing" -Type String -Value "-1125"
+    Set-ItemProperty -Path "HKCU:\Control Panel\Desktop\WindowMetrics" -Name "IconVerticalSpacing" -Type String -Value "-1125"
+}
+
+# Defaults jumping icons on the Windows 10 desktop
+Function DefaultJumpingIcons {
+    Write-Output "Defaults jumping icons on the Windows 10 desktop..."
+    Set-ItemProperty -Path "HKCU:\Control Panel\Desktop\WindowMetrics" -Name "IconSpacing" -Type String -Value "-1725"
+    Set-ItemProperty -Path "HKCU:\Control Panel\Desktop\WindowMetrics" -Name "IconVerticalSpacing" -Type String -Value "-1725"
 }
 
 ##########

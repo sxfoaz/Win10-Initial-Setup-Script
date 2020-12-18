@@ -111,7 +111,7 @@ DisableAutorun                  # EnableAutorun
 # DisableIndexing               # EnableIndexing
 # DisableRecycleBin             # EnableRecycleBin
 EnableNTFSLongPaths             # DisableNTFSLongPaths
-# DisableNTFSLastAccess         # EnableNTFSLastAccess
+DisableNTFSLastAccess           # EnableNTFSLastAccess
 # SetBIOSTimeUTC                # SetBIOSTimeLocal
 # EnableHibernation             # DisableHibernation
 # DisableSleepButton            # EnableSleepButton
@@ -259,6 +259,12 @@ UnpinTaskbarIcons
 DisableSnapAssist               # EnableSnapAssist
 PowerManagementSchemeHigh       # DefaultPowerManagementScheme
 DefaultInputMethodEN            # ResetDefaultInputMethod
+HideDublDrive                   # RestoreDublDrive
+EnableProxyAntizapret           # ###
+# DisableClearType              # EnableClearType
+# DisableFontSmoothing          # EnableFontSmoothing
+DefaultBackgroundColor          # ###
+FixJumpingIcons                 # DefaultJumpingIcons
 
 ### Auxiliary Functions ###
 WaitForKey
