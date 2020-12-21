@@ -4127,14 +4127,14 @@ Function ResetDefaultInputMethod {
 }
 
 # Stop File Explorer From Showing External Drives Twice
-Function HideDublDrive {
+Function HideDuplicateDrive   {
     Write-Output "Stop File Explorer From Showing External Drives Twice..."
     Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\DelegateFolders\{F5FB2C77-0E2F-4A16-A381-3E560C68BC83}" -Recurse -ErrorAction SilentlyContinue
     Remove-Item -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\DelegateFolders\{F5FB2C77-0E2F-4A16-A381-3E560C68BC83}" -Recurse -ErrorAction SilentlyContinue
 }
 
 # Restore File Explorer Showing External Drives
-Function RestoreDublDrive {
+Function RestoreDuplicateDrive {
     Write-Output "Restore File Explorer Showing External Drives..."
     If (!(Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\DelegateFolders\{F5FB2C77-0E2F-4A16-A381-3E560C68BC83}")) {
         New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\DelegateFolders\{F5FB2C77-0E2F-4A16-A381-3E560C68BC83}" | Out-Null }
@@ -4145,7 +4145,7 @@ Function RestoreDublDrive {
 }
 
 # Enable proxy Antizapret (https://antizapret.prostovpn.org/)
-Function EnableProxyAntizapret {
+Function EnableProxyAntizapretRU {
     Write-Output "Ebable Proxy Antizapret..."
     Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings" -Name "AutoConfigURL" -Type String -Value "https://antizapret.prostovpn.org/proxy.pac"
 }
@@ -4175,11 +4175,11 @@ Function EnableFontSmoothing {
     Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "FontSmoothing" -Type DWord -Value 2
 }
 
-# Default background color black
+# Default background color (dark gray)
 Function DefaultBackgroundColor {
     Write-Output "Default background color black..."
     Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "wallpaper" -Type String -Value ""
-    Set-ItemProperty -Path "HKCU:\Control Panel\Colors" -Name "Background" -Type String -Value "0 0 0"
+    Set-ItemProperty -Path "HKCU:\Control Panel\Colors" -Name "Background" -Type String -Value "34 34 34"
 }
 
 # Fix jumping icons on the Windows 10 desktop
@@ -4194,6 +4194,61 @@ Function DefaultJumpingIcons {
     Write-Output "Defaults jumping icons on the Windows 10 desktop..."
     Set-ItemProperty -Path "HKCU:\Control Panel\Desktop\WindowMetrics" -Name "IconSpacing" -Type String -Value "-1725"
     Set-ItemProperty -Path "HKCU:\Control Panel\Desktop\WindowMetrics" -Name "IconVerticalSpacing" -Type String -Value "-1725"
+}
+
+# Install basic software (experemental)
+# Description:
+# This script will use Windows package manager to bootstrap Chocolatey and
+# install a list of packages. Script will also install Sysinternals Utilities
+# into your default drive's root directory.
+Function InstallBasicSoftware {
+    Write-Output "Install basic software..."
+    $packages = @(
+    "notepadplusplus.install"
+    #"peazip.install"
+    #"7zip.install"
+    #"aimp"
+    #"audacity"
+    #"autoit"
+    #"classic-shell"
+    #"filezilla"
+    #"firefox"
+    #"gimp"
+    #"google-chrome-x64"
+    #"imgburn"
+    #"keepass.install"
+    #"paint.net"
+    #"putty"
+    #"python"
+    #"qbittorrent"
+    #"speedcrunch"
+    #"sysinternals"
+    #"thunderbird"
+    #"vlc"
+    #"windirstat"
+    #"wireshark"
+)
+    Write-Host "Setting up Chocolatey software package manager" -ForegroundColor gray
+    Get-PackageProvider -Name chocolatey -Force | Out-Null
+
+    Write-Host "Setting up Full Chocolatey Install" -ForegroundColor gray
+    Install-Package -Name Chocolatey -Force -ProviderName chocolatey | Out-Null
+    $chocopath = (Get-Package chocolatey | ?{$_.Name -eq "chocolatey"} | Select @{N="Source";E={((($a=($_.Source -split "\\"))[0..($a.length - 2)]) -join "\"),"Tools\chocolateyInstall" -join "\"}} | Select -ExpandProperty Source)
+    & $chocopath "upgrade all -y" | Out-Null
+    choco install chocolatey-core.extension --force | Out-Null
+
+    Write-Host "Creating daily task to automatically upgrade Chocolatey packages" -ForegroundColor gray
+    # adapted from https://blogs.technet.microsoft.com/heyscriptingguy/2013/11/23/using-scheduled-tasks-and-scheduled-jobs-in-powershell/
+    $ScheduledJob = @{
+        Name = "Chocolatey Daily Upgrade"
+        ScriptBlock = {choco upgrade all -y}
+        Trigger = New-JobTrigger -Daily -at 2am
+        ScheduledJobOption = New-ScheduledJobOption -RunElevated -MultipleInstancePolicy StopExisting -RequireNetwork
+    }
+    Register-ScheduledJob @ScheduledJob | Out-Null
+
+    Write-Host "Installing Packages" -ForegroundColor gray
+    $packages | %{choco install $_ --force -y} | Out-Null
 }
 
 ##########
