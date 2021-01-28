@@ -255,19 +255,6 @@ RemoveFaxPrinter                # AddFaxPrinter
 # UnpinStartMenuTiles
 # UnpinTaskbarIcons
 
-### Hydra ###
-DisableSnapAssist               # EnableSnapAssist
-PowerManagementSchemeHigh       # DefaultPowerManagementScheme
-DefaultInputMethodEN            # ResetDefaultInputMethod
-HideDuplicateDrive              # RestoreDuplicateDrive
-# DisableClearType              # EnableClearType
-# DisableFontSmoothing          # EnableFontSmoothing
-FixJumpingIcons                 # DefaultJumpingIcons
-### Single
-DefaultBackgroundColor
-EnableProxyAntizapretRU
-# InstallBasicSoftware
-
 ### Auxiliary Functions ###
 WaitForKey
 Restart

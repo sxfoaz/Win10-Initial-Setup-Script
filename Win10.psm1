@@ -4104,14 +4104,15 @@ Function PowerManagementSchemeHigh {
     Write-Output "Power management scheme on High performance..."
     If ((Get-CimInstance -ClassName Win32_ComputerSystem).PCSystemType -eq 1)
     {
-        POWERCFG /SETACTIVE SCHEME_MIN
+        powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61
+        powercfg -SETACTIVE 7128e747-5868-4c35-b343-9dc6a5964db1
     }
 }
 
-# Set the power management scheme on "Balanced" (default value)
-Function DefaultPowerManagementScheme {
-    Write-Output "Power management scheme on Balanced..."
-    POWERCFG /SETACTIVE SCHEME_BALANCED
+# Схема питания по умолчанию
+Function RestoreScheme {
+    Write-Output "Restore Power management scheme..."
+    powercfg -restoredefaultschemes
 }
 
 # Set the default input method to the English language
@@ -4196,60 +4197,39 @@ Function DefaultJumpingIcons {
     Set-ItemProperty -Path "HKCU:\Control Panel\Desktop\WindowMetrics" -Name "IconVerticalSpacing" -Type String -Value "-1725"
 }
 
-# Install basic software (experemental)
-# Description:
-# This script will use Windows package manager to bootstrap Chocolatey and
-# install a list of packages. Script will also install Sysinternals Utilities
-# into your default drive's root directory.
-Function InstallBasicSoftware {
-    Write-Output "Install basic software..."
-    $packages = @(
-    "notepadplusplus.install"
-    #"peazip.install"
-    #"7zip.install"
-    #"aimp"
-    #"audacity"
-    #"autoit"
-    #"classic-shell"
-    #"filezilla"
-    #"firefox"
-    #"gimp"
-    #"google-chrome-x64"
-    #"imgburn"
-    #"keepass.install"
-    #"paint.net"
-    #"putty"
-    #"python"
-    #"qbittorrent"
-    #"speedcrunch"
-    #"sysinternals"
-    #"thunderbird"
-    #"vlc"
-    #"windirstat"
-    #"wireshark"
-)
-    Write-Host "Setting up Chocolatey software package manager" -ForegroundColor gray
-    Get-PackageProvider -Name chocolatey -Force | Out-Null
-
-    Write-Host "Setting up Full Chocolatey Install" -ForegroundColor gray
-    Install-Package -Name Chocolatey -Force -ProviderName chocolatey | Out-Null
-    $chocopath = (Get-Package chocolatey | ?{$_.Name -eq "chocolatey"} | Select @{N="Source";E={((($a=($_.Source -split "\\"))[0..($a.length - 2)]) -join "\"),"Tools\chocolateyInstall" -join "\"}} | Select -ExpandProperty Source)
-    & $chocopath "upgrade all -y" | Out-Null
-    choco install chocolatey-core.extension --force | Out-Null
-
-    Write-Host "Creating daily task to automatically upgrade Chocolatey packages" -ForegroundColor gray
-    # adapted from https://blogs.technet.microsoft.com/heyscriptingguy/2013/11/23/using-scheduled-tasks-and-scheduled-jobs-in-powershell/
-    $ScheduledJob = @{
-        Name = "Chocolatey Daily Upgrade"
-        ScriptBlock = {choco upgrade all -y}
-        Trigger = New-JobTrigger -Daily -at 2am
-        ScheduledJobOption = New-ScheduledJobOption -RunElevated -MultipleInstancePolicy StopExisting -RequireNetwork
-    }
-    Register-ScheduledJob @ScheduledJob | Out-Null
-
-    Write-Host "Installing Packages" -ForegroundColor gray
-    $packages | %{choco install $_ --force -y} | Out-Null
+# Ускоренное появление превью на панели задач
+Function MouseHoverTime {
+    Write-Output "Mouse Hover Time..."
+    Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseHoverTime" -Type String -Value "20"
 }
+
+# Ускоренное появление превью на панели задач (default)
+Function DefaultMouseHoverTime {
+    Write-Output "Default Mouse Hover Time..."
+    Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseHoverTime" -Type String -Value "400"
+}
+
+# Уменьшение кнопок закрыть, свернуть, развернуть
+Function MinTitleButton {
+    Write-Output "Min Title Button..."
+    Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "CaptionHeight" -Type String -Value "-270"
+    Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "CaptionWidth" -Type String -Value "-270"
+}
+
+# Уменьшение кнопок закрыть, свернуть, развернуть (default)
+Function DefaultButton {
+    Write-Output "Default Button..."
+    Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "CaptionHeight" -Type String -Value "300"
+    Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "CaptionWidth" -Type String -Value "300"
+}
+
+# Сжать Windows
+Function CompactOS {
+    Write-Output "CompactOS..."
+    compact /CompactOS:always
+}
+
+
 
 ##########
 #endregion Hydra

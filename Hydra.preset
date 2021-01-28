@@ -56,9 +56,9 @@ SetUACLow                       # SetUACHigh
 # EnableSharingMappedDrives     # DisableSharingMappedDrives
 DisableAdminShares              # EnableAdminShares
 # DisableFirewall               # EnableFirewall
-HideDefenderTrayIcon            # ShowDefenderTrayIcon
-DisableDefender                 # EnableDefender
-DisableDefenderCloud            # EnableDefenderCloud
+# HideDefenderTrayIcon          # ShowDefenderTrayIcon
+# DisableDefender               # EnableDefender
+# DisableDefenderCloud          # EnableDefenderCloud
 # EnableCtrldFolderAccess       # DisableCtrldFolderAccess
 # EnableCIMemoryIntegrity       # DisableCIMemoryIntegrity
 # EnableDefenderAppGuard        # DisableDefenderAppGuard
@@ -238,7 +238,7 @@ DisableMediaSharing             # EnableMediaSharing
 # InstallNET23                  # UninstallNET23
 SetPhotoViewerAssociation       # UnsetPhotoViewerAssociation
 AddPhotoViewerOpenWith          # RemovePhotoViewerOpenWith
-UninstallPDFPrinter              # InstallPDFPrinter
+UninstallPDFPrinter             # InstallPDFPrinter
 UninstallXPSPrinter             # InstallXPSPrinter
 RemoveFaxPrinter                # AddFaxPrinter
 # UninstallFaxAndScan           # InstallFaxAndScan
@@ -257,16 +257,18 @@ UnpinTaskbarIcons
 
 ### Hydra ###
 DisableSnapAssist               # EnableSnapAssist
-PowerManagementSchemeHigh       # DefaultPowerManagementScheme
+PowerManagementSchemeHigh       # RestoreScheme
 DefaultInputMethodEN            # ResetDefaultInputMethod
 HideDuplicateDrive              # RestoreDuplicateDrive
 # DisableClearType              # EnableClearType
 # DisableFontSmoothing          # EnableFontSmoothing
 FixJumpingIcons                 # DefaultJumpingIcons
+MouseHoverTime					# DefaultMouseHoverTime
+MinTitleButton 					# DefaultButton
 ### Single
 DefaultBackgroundColor
 EnableProxyAntizapretRU
-# InstallBasicSoftware
+CompactOS
 
 ### Auxiliary Functions ###
 WaitForKey
